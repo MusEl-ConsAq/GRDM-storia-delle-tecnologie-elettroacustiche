@@ -15,7 +15,7 @@ VENV_DIR = venv
 VENV_ACTIVATE = $(VENV_DIR)/bin/activate
 
 # Comandi Python nell'ambiente virtuale
-VENV_PYTHON = . $(VENV_ACTIVATE) && python3.13
+VENV_PYTHON = . $(VENV_ACTIVATE) && python
 VENV_PIP = . $(VENV_ACTIVATE) && pip
 
 # Opzioni per il compilatore LaTeX
@@ -24,6 +24,10 @@ LATEX_OPTIONS = --halt-on-error
 # Directory per gli script Python e output SVG
 SCRIPTS_DIR = scripts
 SVG_DIR = figures/svg
+
+# File YAML delle opere di Mumma e file di output LaTeX per la timeline
+MUMMA_YAML = docs/data/mumma_works.yaml
+MUMMA_TIMELINE_TEX = docs/scripts/mumma_timeline.tex
 
 # Target predefinito: compila il documento
 all: $(FILENAME).pdf
@@ -81,5 +85,12 @@ update-svg: clean-svg svg
 clean-venv:
 	rm -rf $(VENV_DIR)
 
+# Genera la timeline di Mumma dal file YAML
+timeline: venv-check
+	$(VENV_PYTHON) docs/scripts/generate_mumma_timeline.py $(MUMMA_YAML) $(MUMMA_TIMELINE_TEX)
+	$(LATEX) $(LATEX_OPTIONS) $(MUMMA_TIMELINE_TEX)
+	$(LATEX) $(LATEX_OPTIONS) $(MUMMA_TIMELINE_TEX)
+	@echo "Timeline generata come mumma_timeline.pdf"
+
 # Specifica i target che non sono file
-.PHONY: all clean clean-all venv venv-check svg svg-check clean-svg update-svg clean-venv
+.PHONY: all clean clean-all venv venv-check svg svg-check clean-svg update-svg clean-venv timeline
